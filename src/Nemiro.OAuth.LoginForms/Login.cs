@@ -294,6 +294,27 @@ namespace Nemiro.OAuth.LoginForms
     {
       Debug.WriteLine("Default Callback", "LoginForm");
 
+      // Process erros before everything...
+      string errorMessage = null;
+
+      if (!String.IsNullOrEmpty(e.Url.Query))
+      {
+        errorMessage = this.GetErrorMessage(UniValue.ParseParameters(e.Url.Query.Substring(1)));
+      }
+
+      if (String.IsNullOrEmpty(errorMessage) && !String.IsNullOrEmpty(e.Url.Fragment))
+      {
+        errorMessage = this.GetErrorMessage(UniValue.ParseParameters(e.Url.Fragment.Substring(1)));
+      }
+
+      if (!String.IsNullOrEmpty(errorMessage))
+      {
+        // MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        this.ErrorMessage = errorMessage;
+        this.Close();
+        return;
+      }
+
       // waiting for results
       if (this.Client.Version.Major == 2 && ((OAuth2Client)this.Client).ResponseType == ResponseType.Token)
       {
@@ -333,25 +354,6 @@ namespace Nemiro.OAuth.LoginForms
         return;
       }
 
-      string errorMessage = null;
-
-      if (!String.IsNullOrEmpty(e.Url.Query))
-      {
-        errorMessage = this.GetErrorMessage(UniValue.ParseParameters(e.Url.Query.Substring(1)));
-      }
-      
-      if (String.IsNullOrEmpty(errorMessage) && !String.IsNullOrEmpty(e.Url.Fragment))
-      {
-        errorMessage = this.GetErrorMessage(UniValue.ParseParameters(e.Url.Fragment.Substring(1)));
-      }
-
-      if (!String.IsNullOrEmpty(errorMessage))
-      {
-        // MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        this.ErrorMessage = errorMessage;
-        this.Close();
-        return;
-      }
 
       // hide progress
       if (!this.AccessTokenProcessing) // is impossible to determine the exact address
