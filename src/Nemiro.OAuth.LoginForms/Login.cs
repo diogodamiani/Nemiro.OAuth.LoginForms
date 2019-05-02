@@ -538,6 +538,9 @@ namespace Nemiro.OAuth.LoginForms
 
       this.Callback = callback;
 
+      // Aguarda 300 milisegundos para garantir a não-concorrência dentro do Navigate
+      Thread.Sleep(300);
+
       this.webBrowser1.Navigate(url);
     }
 
